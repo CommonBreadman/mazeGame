@@ -10,7 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 #include <iterator>
-
 #include "shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -168,7 +167,7 @@ int main() {
         }
     }
     char tempMap[32][32];
-    std::copy(std::begin(src), std::end(src), std::begin(dest));
+    std::copy(&map[0][0], &map[0][0] + (32 * 32), &tempMap[0][0]);
     for (int i = 0; i < my; i++) {
         for (int j = 0; j < mx; j++) {
             std::cout << tempMap[i][j];
@@ -223,7 +222,7 @@ int main() {
         // input
         // -----
         processInput(window);
-
+        system("cls");
         // render
         // ------
         glClearColor(0.7f, 0.7f, 0.6f, 1.0f);
@@ -254,15 +253,21 @@ int main() {
         
         // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         // map render
+        std::string rendMap = "";
         for (int i = 0; i < my; i++) {
             for (int j = 0; j < mx; j++) {
                 if (cameraPos[0] >= j - mapsize / 2 - 0.5f && cameraPos[0] <= j - mapsize / 2 + 0.5f && cameraPos[2] >= i - mapsize / 2 - 0.5f && cameraPos[2] <= i - mapsize / 2 + 0.5f) {
-                    tempMap[i][j] = 'P';
+                    tempMap[i][j] = 'X';
                 }
-                std::cout << tempMap[i][j];
+                else if (tempMap[i][j] == 'X') {
+                    tempMap[i][j] = ' ';
+                }
+                rendMap += tempMap[i][j];
             }
-            std::cout << std::endl;
+            rendMap += "\n";
         }
+        std::cout << rendMap << std::endl;
+        
         // wincon
         for (int i = 0; i < mapsize; i++) {
             for (int j = 0; j < mapsize; j++) {
