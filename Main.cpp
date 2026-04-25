@@ -8,6 +8,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <algorithm>
+#include <iterator>
+
 #include "shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -164,9 +167,11 @@ int main() {
             }
         }
     }
+    char tempMap[32][32];
+    std::copy(std::begin(src), std::end(src), std::begin(dest));
     for (int i = 0; i < my; i++) {
         for (int j = 0; j < mx; j++) {
-            std::cout << map[i][j];
+            std::cout << tempMap[i][j];
         }
         std::cout << std::endl;
     }
@@ -248,8 +253,17 @@ int main() {
         ourShader.setMat4("view", view);
         
         // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-
-        // render box
+        // map render
+        for (int i = 0; i < my; i++) {
+            for (int j = 0; j < mx; j++) {
+                if (cameraPos[0] >= j - mapsize / 2 - 0.5f && cameraPos[0] <= j - mapsize / 2 + 0.5f && cameraPos[2] >= i - mapsize / 2 - 0.5f && cameraPos[2] <= i - mapsize / 2 + 0.5f) {
+                    tempMap[i][j] = 'P';
+                }
+                std::cout << tempMap[i][j];
+            }
+            std::cout << std::endl;
+        }
+        // wincon
         for (int i = 0; i < mapsize; i++) {
             for (int j = 0; j < mapsize; j++) {
                 if ((char)map[i][j] == '@' && cameraPos[0] >= j - mapsize / 2 - 0.5f && cameraPos[0] <= j - mapsize / 2 + 0.5f && cameraPos[2] >= i - mapsize / 2 - 0.5f && cameraPos[2] <= i - mapsize / 2 + 0.5f) {
@@ -259,7 +273,8 @@ int main() {
                     system("pause");
                 }
             }
-        }
+        } 
+        //box ren
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < cubes.size(); i++)
         {
